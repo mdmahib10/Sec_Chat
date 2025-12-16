@@ -1,5 +1,6 @@
 import socketio
 import eventlet
+import socket
 
 # Create the Socket.IO server
 sio = socketio.Server(cors_allowed_origins='*')
@@ -19,6 +20,9 @@ def disconnect(sid):
     print(f'Client disconnected: {sid}')
 
 if __name__ == '__main__':
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
     print('Server Starting....')
-    print('Listening on http://0.0.0.0:5000')
-    eventlet.wsgi.server(eventlet.listen(('0.0.0.0', 5000)), app)
+    print(f'Listening on http://{ip}:5000')
+    eventlet.wsgi.server(eventlet.listen((ip, 5000)), app)
